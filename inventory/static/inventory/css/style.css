@@ -1035,3 +1035,8 @@ button:disabled {
         animation-iteration-count: 1 !important;
     }
 }
+
+
+.profile-edit-section {
+    margin-top: 24px;
+}

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main>
+    <section class="card">
+        <h2>Cadastrar categoria</h2>
+
+        <p class="description">
+            Cadastre uma categoria para organizar seus produtos.
+        </p>
+
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <button type="submit">Cadastrar categoria</button>
+        </form>
+    </section>
+</main>
+{% endblock %}

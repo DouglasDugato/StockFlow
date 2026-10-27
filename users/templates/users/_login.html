@@ -1,0 +1,56 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrar | StockFlow</title>
+    <link rel="stylesheet" href="{% static 'inventory/css/style.css' %}">
+</head>
+<body class="login-page">
+    <main class="login-container">
+        <section class="card login-card">
+            <div class="login-brand">
+                <div class="login-logo"></div>
+                <h1>StockFlow</h1>
+                <p>Controle de estoque simples e organizado.</p>
+            </div>
+
+            <div class="login-heading">
+                <h2>Bem-vindo de volta!</h2>
+                <p>Entre com suas credenciais para continuar.</p>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="message error">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                {% for field in form %}
+                    <div class="form-field">
+                        <label for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                        </label>
+                        {{ field }}
+
+                        {% if field.errors %}
+                            <div class="errorlist">
+                                {{ field.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <button type="submit">Entrar na minha conta</button>
+            </form>
+
+            <p class="login-footer">StockFlow · Controle de estoque</p>
+        </section>
+    </main>
+</body>
+</html>

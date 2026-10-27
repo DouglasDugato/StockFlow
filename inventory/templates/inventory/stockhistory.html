@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Histórico de movimentações | Herbalife Estoque{% endblock %}
+
+{% block content %}
+
+<table class="history-table">
+    <thead>
+        <tr>
+            <th>Produto</th>
+            <th>Tipo</th>
+            <th>Quantidade</th>
+            <th>Usuário</th>
+            <th>Data</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for movement in movements %}
+        <tr>
+                <td>{{ movement.product }}</td>
+                <td>{{ movement.movement_type }}</td>
+                <td>{{ movement.quantity }}</td>
+                <td>{{ movement.user }}</td>
+                <td>{{ movement.created_at|date:"d/m/Y H:i"  }}</td>
+        </tr>
+        
+        {% empty %}
+            <tr>
+                <td colspan="5">Não há transações disponíveis.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+
+</table>
+
+
+
+{% endblock content %}

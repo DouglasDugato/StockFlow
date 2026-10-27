@@ -1,0 +1,55 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="dashboard">
+    <h1>Seja bem-vindo!</h1>
+    <p class="dashboard-subtitle">
+        Consulte seus produtos e acompanhe seu estoque.
+    </p>
+
+    <form method="get" class="search-form">
+        <input
+            type="text"
+            name="q"
+            placeholder="Buscar produto pelo nome..."
+            value="{{ pesquisa_search }}"
+        >
+        <button type="submit">Buscar</button>
+    </form>
+
+    <section class="products-section">
+        <h2>Produtos em estoque</h2>
+
+        <div class="product-list">
+            {% for produto in produtos_pesquisa %}
+                <div class="product-item">
+                    <div class="product-info">
+                        <strong>{{ produto.name }}</strong>
+
+                        {% if produto.stock_quantity <= produto.minimum_stock %}
+                            <span class="stock-warning">Estoque baixo</span>
+                        {% endif %}
+                    </div>
+
+                    <span class="product-quantity">
+                        {{ produto.stock_quantity }} unidades
+                    </span>
+                </div>
+            {% empty %}
+                {% if pesquisa_search %}
+                    <p class="empty-message">
+                        Nenhum produto encontrado para "{{ pesquisa_search }}".
+                    </p>
+                {% else %}
+                    <p class="empty-message">
+                        Nenhum produto cadastrado.
+                    </p>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </section>
+</div>
+
+{% endblock content %}

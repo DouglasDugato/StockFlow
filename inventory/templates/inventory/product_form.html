@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+<main>
+    <section class="card">
+        <h2>Cadastrar produto</h2>
+        <p class="description">
+            Preencha os dados do produto para adicioná-lo ao seu estoque.
+        </p>
+
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <button type="submit">Cadastrar produto</button>
+        </form>
+    </section>
+</main>
+
+{% endblock content %}

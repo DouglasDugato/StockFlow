@@ -1,0 +1,59 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Nova movimentação | Herbalife Estoque{% endblock %}
+
+{% block content %}
+<section class="card">
+    <h2>Nova movimentação</h2>
+    <p class="description">
+        Registre uma entrada de produtos ou uma venda.
+    </p>
+
+    {% for message in messages %}
+        <div class="message {{ message.tags }}">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <form method="post">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+            <div class="message error">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+
+
+        <div class="form-field">
+            {{ form.product.label_tag }}
+            {{ form.product }}
+            {{ form.product.errors }}
+        </div>
+
+        <div class="form-field">
+            {{ form.movement_type.label_tag }}
+            {{ form.movement_type }}
+            {{ form.movement_type.errors }}
+        </div>
+
+        <div class="form-field">
+            {{ form.quantity.label_tag }}
+            {{ form.quantity }}
+            {{ form.quantity.errors }}
+        </div>
+
+        <button id="submit-movement" type="submit">
+            Registrar movimentação
+        </button>
+    </form>
+
+    <a class="back-link" href="{% url 'users:dashboard' %}">
+        ← Voltar ao dashboard
+    </a>
+</section>
+  <script src="{% static 'inventory/js/scripts.js' %}" defer></script>
+
+{% endblock %}

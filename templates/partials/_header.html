@@ -1,0 +1,43 @@
+<header>
+    <div class="header-content">
+        <div class="brand">
+            <h1>Stockflow</h1>
+            <p>Controle de produtos e movimentações</p>
+        </div>
+
+        {% if user.is_authenticated %}
+            <nav>
+                <a href="{% url 'users:dashboard' %}">Pagina Inicial</a>
+
+                <details class="nav-dropdown">
+                    <summary>
+                        Menu <span class="arrow">▾</span>
+                    </summary>
+
+                    <div class="dropdown-content">
+                        <a href="{% url 'inventory:product_create' %}">
+                            Cadastrar produto
+                        </a>
+
+                        <a href="{% url 'inventory:category_create' %}">
+                            Cadastrar categoria
+                        </a>
+
+                        <a href="{% url 'inventory:movement_create' %}">
+                            Registrar movimentação
+                        </a>
+
+                        <a href="{% url 'inventory:movement_history' %}">
+                            Histórico de movimentações
+                        </a>
+                    </div>
+                </details>
+
+                <form method="post" action="{% url 'users:logout' %}">
+                    {% csrf_token %}
+                    <button type="submit">Sair</button>
+                </form>
+            </nav>
+        {% endif %}
+    </div>
+</header>

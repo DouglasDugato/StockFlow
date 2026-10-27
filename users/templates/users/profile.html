@@ -1,0 +1,68 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="dashboard">
+    <h1>Meu perfil</h1>
+    <p class="dashboard-subtitle">
+        Consulte e atualize seus dados pessoais.
+    </p>
+
+    <section class="products-section">
+        <h2>Dados da conta</h2>
+
+        <div class="product-list">
+            <div class="product-item">
+                <div class="product-info">
+                    <strong>Nome de usuário</strong>
+                </div>
+                <span>{{ user.username }}</span>
+            </div>
+
+            <div class="product-item">
+                <div class="product-info">
+                    <strong>Nome</strong>
+                </div>
+                <span>{{ user.first_name|default:"Não informado" }}</span>
+            </div>
+
+            <div class="product-item">
+                <div class="product-info">
+                    <strong>Sobrenome</strong>
+                </div>
+                <span>{{ user.last_name|default:"Não informado" }}</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="products-section profile-edit-section">
+        <h2>Editar dados pessoais</h2>
+
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="profile">
+
+            {{ form.as_p }}
+
+            <button type="submit">Salvar alterações</button>
+        </form>
+    </section>
+
+    <section class="products-section profile-edit-section">
+        <h2>Segurança</h2>
+        <p>Altere a senha da sua conta.</p>
+
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="password">
+
+            {{ password_form.as_p }}
+
+            <button type="submit">Alterar senha</button>
+        </form>
+    </section>
+</div>
+
+{% endblock content %}
+

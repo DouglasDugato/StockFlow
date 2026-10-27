@@ -15,9 +15,15 @@
     {% include "partials/_header.html" %}
 
     <main>
+        {% for message in messages %}
+            <div class="message {{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+
         {% block content %}
-        {% endblock %}
+
+        {% endblock content %}
     </main>
 </body>
 </html>
-```

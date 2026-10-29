@@ -13,7 +13,9 @@ class StockMovementTest(TestCase):
             password="test123"
         )
 
-        self.category = Category.objects.create(name="Teste")
+        self.category = Category.objects.create(
+        name="Teste",
+        owner=self.user,)
 
         self.product = Product.objects.create(
             name="Produto teste",
@@ -37,7 +39,130 @@ class StockMovementTest(TestCase):
         self.product.refresh_from_db()
 
         self.assertEqual(self.product.stock_quantity, 15)
-    
+
+
+    def test_cancel_entry_reverts_stock(self):
+        movement = StockMovement.objects.create(
+        product=self.product,
+        movement_type=StockMovement.MovementType.ENTRY,
+        quantity=5,
+        user=self.user,
+    )
+
+        movement.apply()
+
+        movement.cancel()
+
+
+        self.product.refresh_from_db()
+        movement.refresh_from_db()
+
+        self.assertEqual(self.product.stock_quantity, 10)
+        self.assertEqual(movement.status, StockMovement.Status.CANCELLED)
+
+    def test_cancel_sale_reverts_stock(self):
+        movement = StockMovement.objects.create(
+            product=self.product,
+            movement_type=StockMovement.MovementType.SALE,
+            quantity=4,
+            user=self.user,
+        )
+
+        movement.apply()
+        movement.cancel()
+
+        self.product.refresh_from_db()
+        movement.refresh_from_db()
+
+        self.assertEqual(self.product.stock_quantity, 10)
+        self.assertEqual(movement.status, StockMovement.Status.CANCELLED)
+
+
+    def test_cannot_cancel_pending_movement(self):
+        movement = StockMovement.objects.create(
+            product=self.product,
+            movement_type=StockMovement.MovementType.SALE,
+            quantity=4,
+            user=self.user,
+        )
+        with self.assertRaises(ValidationError):
+            movement.cancel()
+
+        self.product.refresh_from_db()
+        movement.refresh_from_db()
+
+        self.assertEqual(self.product.stock_quantity, 10)
+        self.assertEqual(movement.status, StockMovement.Status.PENDING)
+
+
+    def test_cannot_cancel_movement_twice(self):
+        movement = StockMovement.objects.create(
+        product=self.product,
+        movement_type=StockMovement.MovementType.ENTRY,
+        quantity=5,
+        user=self.user,
+        )
+
+        movement.apply()
+        movement.cancel()
+
+        self.product.refresh_from_db()
+        movement.refresh_from_db()
+
+        with self.assertRaises(ValidationError):
+            movement.cancel()
+
+        self.assertEqual(self.product.stock_quantity, 10)
+        self.assertEqual(movement.status, StockMovement.Status.CANCELLED)
+
+
+    def test_cannot_cancel_entry_if_stock_is_insufficient(self):
+        movement = StockMovement.objects.create(
+        product=self.product,
+        movement_type=StockMovement.MovementType.ENTRY,
+        quantity=5,
+        user=self.user)
+
+        movement.apply()
+
+
+        self.product.refresh_from_db()
+        movement.refresh_from_db()
+
+        self.assertEqual(self.product.stock_quantity, 15)
+        self.assertEqual(movement.status, StockMovement.Status.APPLIED)
+
+        movement = StockMovement.objects.create(
+        product=self.product,
+        movement_type=StockMovement.MovementType.SALE,
+        quantity=12,
+        user=self.user)
+
+        movement.apply()
+
+        self.product.refresh_from_db()
+        movement.refresh_from_db()
+
+
+        self.assertEqual(self.product.stock_quantity, 3)
+        self.assertEqual(movement.status, StockMovement.Status.APPLIED)
+
+        movement = StockMovement.objects.get(
+        product=self.product,
+        movement_type=StockMovement.MovementType.ENTRY,
+        quantity=5,
+        user=self.user)
+
+        with self.assertRaises(ValidationError):
+            movement.cancel()
+
+        self.product.refresh_from_db()
+        movement.refresh_from_db()
+
+
+        self.assertEqual(self.product.stock_quantity, 3)
+        self.assertEqual(movement.status, StockMovement.Status.APPLIED)
+
     def test_sale_stock(self):
         movement = StockMovement.objects.create(
             product=self.product,
@@ -51,7 +176,7 @@ class StockMovementTest(TestCase):
         self.product.refresh_from_db()
 
         self.assertEqual(self.product.stock_quantity, 7)
-    
+
     def test_sale_decrease_failure(self):
         movement = StockMovement.objects.create(
             product=self.product,
@@ -76,7 +201,7 @@ class StockMovementTest(TestCase):
         )
 
         movement.apply()
-       
+
         with self.assertRaises(ValidationError):
             movement.apply()
 
@@ -131,4 +256,4 @@ class StockMovementTest(TestCase):
         movement.refresh_from_db()
 
         self.assertEqual(self.product.stock_quantity, 10)
-        self.assertFalse(movement.applied)
+        self.assertEqual(movement.status, StockMovement.Status.PENDING)

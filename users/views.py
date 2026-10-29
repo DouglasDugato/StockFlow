@@ -40,7 +40,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         context["total_produtos"] = Product.objects.filter(owner=self.request.user).count()
         context['produtos_estoque_baixo'] = Product.objects.filter(stock_quantity__lte=F('minimum_stock')).filter(owner=self.request.user).count()
         context['produtos_baixo_estoque'] = Product.objects.filter(stock_quantity__lte=F('minimum_stock')).filter(owner=self.request.user)
-        context["movimentos_estoques_qtd"] = StockMovement.objects.filter(user=self.request.user,applied=True).count()
+        context["movimentos_estoques_qtd"] = StockMovement.objects.filter(user=self.request.user,status=StockMovement.Status.APPLIED).count()
         context["produtos"] = Product.objects.filter(owner=self.request.user)
 
 

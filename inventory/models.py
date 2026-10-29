@@ -17,7 +17,7 @@ class Category(models.Model):
 
 
 class Product(models.Model):
-    name = models.CharField(max_length=150)                 
+    name = models.CharField(max_length=150)
     category = models.ForeignKey(
         Category,
         on_delete=models.PROTECT,
@@ -50,8 +50,17 @@ class StockMovement(models.Model):
         ENTRY = "ENTRADA", "Entrada"
         SALE = "VENDA", "Venda"
 
+    class Status(models.TextChoices):
+        PENDING = "PENDENTE", "Pendente"
+        APPLIED = "APLICADA", "Aplicada"
+        CANCELLED = "CANCELADA", "Cancelada"
 
-    applied = models.BooleanField(default=False)
+    status = models.CharField(
+    max_length=10,
+    choices=Status.choices,
+    default=Status.PENDING,
+)
+
 
     product = models.ForeignKey(
         Product,
@@ -78,15 +87,15 @@ class StockMovement(models.Model):
         return f"{self.product} - {self.movement_type} - {self.quantity}"
 
     def apply(self):
-        
+
         with transaction.atomic():
 
             movement = StockMovement.objects.select_for_update().get(pk=self.pk)
 
 
 
-            if movement.applied:
-                raise ValidationError('mudar texto')
+            if movement.status != StockMovement.Status.PENDING:
+                raise ValidationError('Só é possível aplicar movimentações pendentes.')
 
             if movement.quantity <= 0:
                 raise ValidationError('Quantidade deve ser maior que 0')
@@ -110,8 +119,36 @@ class StockMovement(models.Model):
             else:
                 raise ValidationError('Tipo de movimentação é invalida')
 
-            
-            movement.applied = True
+            product.save()
+            movement.status = StockMovement.Status.APPLIED
+            movement.save()
+
+
+    def cancel(self):
+        with transaction.atomic():
+
+            movement = StockMovement.objects.select_for_update().get(pk=self.pk)
+
+            if movement.status != StockMovement.Status.APPLIED:
+                raise ValidationError('Só é possível cancelar movimentações aplicadas')
+
+            product = Product.objects.select_for_update().get(pk=movement.product_id) #type: ignore
+
+            if product.owner != movement.user:
+                raise ValidationError("Você não pode movimentar o estoque de outro usuário.")
+
+
+            if movement.movement_type == StockMovement.MovementType.ENTRY:
+                if product.stock_quantity < movement.quantity:
+                    raise ValidationError('Quantidade em estoque insuficiente')
+                else:
+                    product.stock_quantity -= movement.quantity
+
+            elif movement.movement_type == StockMovement.MovementType.SALE:
+                    product.stock_quantity += movement.quantity
+            else:
+                raise ValidationError('Tipo de movimentação é invalida')
 
             product.save()
+            movement.status = StockMovement.Status.CANCELLED
             movement.save()

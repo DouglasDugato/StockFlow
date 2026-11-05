@@ -30,10 +30,25 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='products')
+    image = models.ImageField(upload_to="products/", blank=True, null=True)
+
 
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        if self.category_id and self.owner_id: #type:ignore
+            category_owner_id = Category.objects.values_list(
+                "owner_id",
+                flat=True,
+            ).get(pk=self.category_id) #type:ignore
+
+            if self.owner_id != category_owner_id: #type:ignore
+                raise ValidationError(
+                    "O produto e a categoria devem pertencer ao mesmo usuário."
+                )
+
+        super().save(*args, **kwargs)
 
 
 class StockMovement(models.Model):
@@ -152,3 +167,6 @@ class StockMovement(models.Model):
             product.save()
             movement.status = StockMovement.Status.CANCELLED
             movement.save()
+
+
+    

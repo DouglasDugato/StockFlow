@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.views import View
 from django.views.generic.base import TemplateView
 from django.views.generic import ListView
@@ -60,6 +60,25 @@ class StockMovementListView(LoginRequiredMixin, TemplateView):
 
         return context
 
+
+class StockMovementCancelView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+
+        movement = get_object_or_404(StockMovement, user=request.user, pk=pk)
+
+
+        try:
+            movement.cancel()
+        except ValidationError as error:
+            messages.error(request, str(error.messages[0]))
+        else:
+            messages.success(request, 'Cancelado com sucesso')
+
+        return redirect('inventory:movement_history')
+
+        
+
+
 class ProductCreateView(LoginRequiredMixin, View):
     template_name = 'inventory/product_form.html'
 
@@ -72,7 +91,7 @@ class ProductCreateView(LoginRequiredMixin, View):
         )
 
     def post(self, request):
-        form = ProductForm(user=request.user, data=request.POST)
+        form = ProductForm(user=request.user, data=request.POST, files=request.FILES)
 
         if form.is_valid():
             product = form.save(commit=False)
@@ -132,4 +151,44 @@ class CategoryCreateView(LoginRequiredMixin, View):
             request,
             self.template_name,
             {"form": form},
+        )
+
+class ProductUpdateView (LoginRequiredMixin, View):
+    template_name = 'inventory/update_product.html'
+   
+    def get(self, request, pk):
+
+            produto = get_object_or_404(Product, owner=request.user, pk=pk)
+            
+            form = ProductForm(
+                user=request.user,
+                instance = produto
+            )
+
+            return render(
+                request,
+                self.template_name,
+                {
+                    "form": form
+                }
+            )
+
+    def post(self, request, pk):
+        produto = get_object_or_404(Product, owner=request.user, pk=pk)
+
+        form = ProductForm(user = request.user,data=request.POST, files=request.FILES ,instance = produto )
+
+        if form.is_valid():
+            form.save()
+
+
+            messages.success(request, "Produto atualizado com sucesso")
+            return redirect("users:dashboard")
+
+        return render(
+            request,
+            self.template_name,
+            {
+                "form": form
+            }
         )

@@ -8,10 +8,13 @@
     <thead>
         <tr>
             <th>Produto</th>
+            <th>Categoria</th>
             <th>Tipo</th>
             <th>Quantidade</th>
             <th>Usuário</th>
             <th>Data</th>
+            <th>Status</th>
+            <th>Ações</th>
         </tr>
     </thead>
 
@@ -19,15 +22,26 @@
         {% for movement in movements %}
         <tr>
                 <td>{{ movement.product }}</td>
+                <td>{{ movement.product.category }}</td>
                 <td>{{ movement.movement_type }}</td>
                 <td>{{ movement.quantity }}</td>
                 <td>{{ movement.user }}</td>
                 <td>{{ movement.created_at|date:"d/m/Y H:i"  }}</td>
+                <td>{{ movement.status }}</td>
+                <td>
+                    {% if movement.status == 'APLICADA'  %}
+                    <form action="{% url 'inventory:movement_cancel' movement.pk %}" method='post'>
+                        {% csrf_token %}
+                        <button type="submit" class="btn-cancel">Cancelar</button>
+                    </form>
+                    {% endif %}
+                </td>
         </tr>
+
         
         {% empty %}
             <tr>
-                <td colspan="5">Não há transações disponíveis.</td>
+                <td colspan="8">Não há transações disponíveis.</td>
             </tr>
         {% endfor %}
     </tbody>

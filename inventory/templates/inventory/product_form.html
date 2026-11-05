@@ -9,7 +9,7 @@
             Preencha os dados do produto para adicioná-lo ao seu estoque.
         </p>
 
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {{ form.as_p }}
 

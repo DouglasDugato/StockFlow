@@ -9,8 +9,17 @@ class StockMovementForm(forms.ModelForm):
     def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.fields['product'].queryset = Product.objects.filter(owner=user) #type: ignore
+        self.fields["product"].queryset = Product.objects.filter(owner=user) #type:ignore
 
+    def clean_quantity(self):
+        quantity = self.cleaned_data["quantity"]
+
+        if quantity <= 0:
+            raise forms.ValidationError(
+                "A quantidade deve ser maior que zero."
+            )
+
+        return quantity
 
     class Meta:
         model = StockMovement
@@ -38,12 +47,13 @@ class ProductForm(forms.ModelForm):
 
     class Meta:
         model = Product
-        fields = ["name", "category", "price", "minimum_stock"]
+        fields = ["name", "category", "price", "minimum_stock", 'image']
         labels = {
             "name": "Nome do produto",
             "category": "Categoria",
             "price": "Preço",
             "minimum_stock": "Estoque mínimo",
+            "image": "Imagem do produto"
         }
 
 
@@ -52,3 +62,5 @@ class CategoryForm(forms.ModelForm):
         model = Category
 
         fields = ['name']
+
+

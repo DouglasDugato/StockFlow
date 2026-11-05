@@ -544,6 +544,33 @@ nav .dropdown-content a:hover {
     font-size: 12px;
     font-weight: 700;
 }
+.stock-empty {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    width: fit-content;
+    padding: 6px 12px;
+
+    color: #b42318;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 999px;
+
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+}
+
+.stock-empty::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    flex-shrink: 0;
+
+    background: #dc2626;
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
+}
 
 .stock-warning::before {
     content: "";
@@ -1039,4 +1066,151 @@ button:disabled {
 
 .profile-edit-section {
     margin-top: 24px;
+}
+
+.btn-cancel {
+    width: auto;
+    min-height: 0;
+    padding: 7px 14px;
+    font-size: 13px;
+    border-radius: 8px;
+    background: var(--danger);
+    color: #fff;
+}
+
+.btn-cancel:hover {
+    background: #991b1b;
+}
+
+
+/* Grade de produtos */
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+    gap: 24px;
+    margin-top: 20px;
+}
+
+/* Card individual */
+
+.product-card {
+    overflow: hidden;
+    min-width: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    transition: transform 200ms var(--ease),
+                box-shadow 200ms var(--ease);
+}
+
+.product-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Área da imagem */
+
+.product-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 4 / 3;
+    background: var(--surface-muted);
+    color: var(--text-tertiary);
+    border-bottom: 1px solid var(--border);
+}
+
+/* Informações */
+
+.product-card-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 16px;
+}
+
+.product-card-info strong {
+    color: var(--text-primary);
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.product-price {
+    color: var(--accent-ink);
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.product-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 280px;
+    overflow: hidden;
+    background: var(--surface-muted);
+    border-bottom: 1px solid var(--border);
+}
+
+.product-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 8px;
+}
+
+input[type="file"]::file-selector-button {
+    background: #166534;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    margin-right: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+input[type="file"]::file-selector-button:hover {
+    background: #14532d;
+}
+
+.product-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.product-card-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.product-edit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    padding: 10px 14px;
+    margin-top: auto;
+
+    background: #166534;
+    color: white;
+    border-radius: 8px;
+
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+
+    transition: background 200ms ease;
+}
+
+.product-edit:hover {
+    background: #14532d;
 }

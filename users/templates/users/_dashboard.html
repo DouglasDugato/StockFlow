@@ -4,7 +4,15 @@
 {% block content %}
 
 <div class="dashboard">
-    <h1>Seja bem-vindo!</h1>
+    <h1>
+        Olá, 
+        {% if user.first_name  %}
+            {{ user.first_name }}
+        {% else %}
+            {{ user.username }}       
+        {% endif %}
+        ! 👋
+    </h1>
     <p class="dashboard-subtitle">
         Consulte seus produtos e acompanhe seu estoque.
     </p>
@@ -22,33 +30,59 @@
     <section class="products-section">
         <h2>Produtos em estoque</h2>
 
-        <div class="product-list">
-            {% for produto in produtos_pesquisa %}
-                <div class="product-item">
-                    <div class="product-info">
-                        <strong>{{ produto.name }}</strong>
+<div class="product-grid">
+    {% for produto in produtos_pesquisa %}
+        <article class="product-card">
 
-                        {% if produto.stock_quantity <= produto.minimum_stock %}
-                            <span class="stock-warning">Estoque baixo</span>
-                        {% endif %}
-                    </div>
 
-                    <span class="product-quantity">
-                        {{ produto.stock_quantity }} unidades
-                    </span>
-                </div>
-            {% empty %}
-                {% if pesquisa_search %}
-                    <p class="empty-message">
-                        Nenhum produto encontrado para "{{ pesquisa_search }}".
-                    </p>
-                {% else %}
-                    <p class="empty-message">
-                        Nenhum produto cadastrado.
-                    </p>
+            <div class="product-image">
+            {% if produto.image %}
+                <img src="{{ produto.image.url }}" alt="{{ produto.name }}">
+            {% else %}
+                <span>Imagem do produto</span>
+            {% endif %}
+            </div>
+
+            <div class="product-card-info">
+                <strong>{{ produto.name }}</strong>
+                <span class="product-price">
+                R$ {{ produto.price }}
+                </span>
+
+                <span class="product-quantity">
+                    {{ produto.stock_quantity }} unidades
+                </span>
+
+                {% if produto.stock_quantity == produto.minimum_stock %}
+                    <span class="stock-warning">Estoque baixo</span>
+
+                {% elif produto.stock_quantity < produto.minimum_stock %}
+                    <span class="stock-empty">Sem Estoque</span>
                 {% endif %}
-            {% endfor %}
-        </div>
+
+                <a
+                    href="{% url 'inventory:product_update' produto.pk %}"
+                    class="product-edit"
+                    aria-label="Editar {{ produto.name }}"
+                    title="Editar produto"
+                >
+                    ✏️ Editar
+                </a>
+            </div>
+
+        </article>
+    {% empty %}
+        {% if pesquisa_search %}
+            <p class="empty-message">
+                Nenhum produto encontrado para "{{ pesquisa_search }}".
+            </p>
+        {% else %}
+            <p class="empty-message">
+                Nenhum produto cadastrado.
+            </p>
+        {% endif %}
+    {% endfor %}
+</div>
     </section>
 </div>
 

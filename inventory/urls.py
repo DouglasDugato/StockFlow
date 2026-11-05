@@ -16,7 +16,11 @@ urlpatterns = [
         views.StockMovementListView.as_view(),
         name="movement_history",
     ),
-
+    path(
+        "movimentacoes/<int:pk>/cancelar/",
+        views.StockMovementCancelView.as_view(),
+        name="movement_cancel",
+    ),
     path(
     "produtos/novo/",
     views.ProductCreateView.as_view(),
@@ -32,6 +36,11 @@ urlpatterns = [
         "categorias/nova/",
         views.CategoryCreateView.as_view(),
         name="category_create",
+    ),
+    path(
+        "produtos/<int:pk>/editar",
+        views.ProductUpdateView.as_view(),
+        name="product_update",
     ),
 
 

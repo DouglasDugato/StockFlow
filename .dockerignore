@@ -25,3 +25,9 @@
 **/values.dev.yaml
 LICENSE
 README.md
+**/media
+**/staticfiles
+**/venv
+**/*.pyc
+**/.pytest_cache
+**/.mypy_cache
